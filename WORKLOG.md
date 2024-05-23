@@ -1,22 +1,47 @@
 # Work Log
 
-## GROUP MEMBER 1
+## Richie Xue
 
-### date x
+### 5/20/24
 
-info
+Brainstormed topic ideas 
 
-### date y
+### 5/20/24
 
-info
+Brainstormed topic ideas (shot down by K)
+
+### 5/21/24
+
+Brainstormed topic ideas (shot down by K again ._.)
+
+### 5/22/24
+
+Brainstormed topic ideas + looked into AES
+
+### 5/23/24
+
+AES Research:
+https://legacy.cryptool.org/en/cto/aes-animation
 
 
-## GROUP MEMBER 2
+## Eric Lin
 
-### date x
+### 5/20/24
 
-info
+Brainstormed topic ideas
 
-### date y
+### 5/21/24
 
-info
+Brainstormed topic ideas (dot down by K again ._.)
+
+### 5/22/24
+
+Brainstormed topic ideas + looked into wifi cracking 
+
+### 5/23/24
+
+Decided on AES: 
+
+https://www.youtube.com/watch?v=3MPkc-PFSRI
+https://www.youtube.com/watch?v=4KiwoeDJFiA
+
