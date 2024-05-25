@@ -45,3 +45,18 @@ Decided on AES:
 https://www.youtube.com/watch?v=3MPkc-PFSRI
 https://www.youtube.com/watch?v=4KiwoeDJFiA
 
+### 5/24/24
+
+AES Research:
+Studied the AES algorithm and how it works, think we plan on doing the 256 key version. 
+AES is a symmetric key algorithm, meaning the same key is used for both encryption and decryption. The steps are as follows:
+1. Key Expansion
+2. Initial Round 
+3. Rounds (14 for 256 key)
+4. Final Round
+5. Decryption
+
+Will have to pad the message to be a multiple of 128 bits, or split if it is too long.
+Need to write our mapping functions for the S-boxes and Rijndael MixColumns. :\(
+
+
