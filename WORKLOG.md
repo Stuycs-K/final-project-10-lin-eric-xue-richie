@@ -47,3 +47,7 @@ Decided on AES:
 Watched a video on AES and looked at the animation richie told me to look at + wikipedia research + started taking notes 
 https://www.youtube.com/watch?v=3MPkc-PFSRI
 https://www.youtube.com/watch?v=4KiwoeDJFiA
+
+### 5/27/24
+
+Learned and took (a lot) of notes on the iterative steps. Still need to learn how to generate round keys, but besides that I got everything else. 

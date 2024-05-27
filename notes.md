@@ -4,6 +4,7 @@ Resouces:
 https://www.youtube.com/watch?v=O4xNJsjtN6E
 https://www.youtube.com/watch?v=NHuibtoL_qk
 
+https://legacy.cryptool.org/en/cto/aes-animation
 
 Iterative Process: 
 1) SubBytes
@@ -64,4 +65,10 @@ We don't need to reduce in this case.
 
 
 
-    
+4) AddRoundKey: A round key is applied by a bitwise XOR. This round key was created by expanding the key before the encryption/decryption process and has the same length as a block
+
+
+How to get the round key: 
+
+The expanded key array 
+
