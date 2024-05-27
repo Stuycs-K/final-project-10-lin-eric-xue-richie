@@ -39,7 +39,8 @@ Addition and subtraction (XOR operations):
 Multiplication: 
 0 * 0 = 0, 0 * 1 = 0,  1 * 0 = 0, 1 * 1 = 1
 
-An irreducible polynomal over GF(2) is a polynomial that cannot be factored into the product of two non-constant polynomials over GF(2). 
+An irreducible polynomial over GF(2) is a polynomial that cannot be factored into the product of two non-constant polynomials over GF(2). in other words it has no divisors other than itself and the constant polynomial 1. This polynomial serves as the modulus, ensuring every non-zero element has a multiplicative inverse. 
+- common polynomial : x^8 + x^4 + x^3 = x + 1
 
 Multiplicative Inverse: a(x) * b(x) = 1 mod P(x)
 - use the extended Euclidean Algorithm: 
@@ -51,5 +52,16 @@ Multiplicative Inverse: a(x) * b(x) = 1 mod P(x)
     EX: a(x) = x^3 + x + 1, P(x) = x^8 + x^4 + x^3 + x + 1
 
         a(x) * u(x) = 1 mod P(x)
+
+
+Polynomial multiplication: 
+(x^3 + x + 1)(x^2 + x) = x^5 + 2x^4 + x^3 + x^2 + x
+since 2x^4 is in GF(2) it simplifies to zero. Since GF(256) uses G(2) for each coefficent, we use GF(2). 
+It also ensures that all coefficents are within the set {0, 1}
+
+x^5 + x^3 + x^2 + x
+We don't need to reduce in this case. 
+
+
 
     
