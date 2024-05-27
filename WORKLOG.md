@@ -23,6 +23,12 @@ Brainstormed topic ideas + looked into AES
 AES Research:
 https://legacy.cryptool.org/en/cto/aes-animation
 
+## 5/24/24 
+
+AES Research:
+Studied the AES algorithm and how it works, think we plan on doing the 256 key version.
+Got the general idea of how the algorithm works, but since we are not using any built-in libraries, we will be creating our own map functions for the S-boxes and Rijndael MixColumns. We are also deciding whether we will need to be creating our own SHA key generators, or if we can use a library for that.
+
 
 ## Eric Lin
 
