@@ -37,21 +37,34 @@ inv_s_box: list = [
 ]
 
 import os
-
-def gen_256_key() -> str:
-    return os.urandom(32).hex()
-
-def split_text(input: str) -> list:
-    blocks: list = []
-    for i in range(0, len(input), 4):
-        if len(input[i: i+4]) < 4:
-            blocks.append(input[i: i+4].ljust(4, " "))
-        else:
-            blocks.append(input[i: i+4])        
-    return blocks
-
-def to_hex(input: str) -> str:
-    return input.encode().hex()
+class AES:
+    text: str
+    blocks: list
     
+    def __init__(self, text: str):
+        self.key = self.gen_256_key()  
+        self.text  = text 
+        self.blocks = self.split_text()
+
+    def gen_256_key(self) -> str:
+        return os.urandom(32).hex()
+
+    def split_text(self) -> list:
+        blocks: list = []
+        for i in range(0, len(self.text), 4):
+            if len(self.text[i: i+4]) < 4:
+                blocks.append(self.text[i: i+4].ljust(4, " "))
+            else:
+                blocks.append(self.text[i: i+4])        
+        return blocks
+
+    def to_hex(self) -> str:
+        return "".join(map(str, self.blocks)).encode().hex()
+
 example: str = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
+aes = AES(example)
+
+print(aes.to_hex())
+print(aes.blocks)
+print(aes.key)
