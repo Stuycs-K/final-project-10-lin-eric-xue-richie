@@ -73,3 +73,8 @@ https://www.youtube.com/watch?v=4KiwoeDJFiA
 
 Learned and took (a lot) of notes on the iterative steps. Still need to learn how to generate round keys, but besides that I got everything else. 
 
+### 5/28/24
+
+https://www.geeksforgeeks.org/advanced-encryption-standard-aes/#
+
+Took notes on round key generation (still a bit lost, what's a round constant?)
