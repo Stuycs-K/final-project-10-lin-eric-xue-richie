@@ -78,3 +78,9 @@ Word generation: 4 bytes (32 words for 256)
 2) apply rotword (rotate all bytes by 1 to the left)
 3) xor the first byte with the round constant (figure out what that is)
 4) generate the new words 
+
+if W[4i], W[4 (i-1)] xor modified result
+   W[4i + 1] = W[4i] xor W[4(i-1) + 1]
+   W[4i + 2] = W[4i] xor W[4(i-1) + 2]
+   W[4i + 13 = W[4i] xor W[4(i-1) + 3]
+continue until all round keys are generated
