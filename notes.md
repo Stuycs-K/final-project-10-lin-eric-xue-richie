@@ -70,5 +70,11 @@ We don't need to reduce in this case.
 
 How to get the round key: 
 
-The expanded key array 
+The first set of round key is the original key
 
+Word generation: 4 bytes (32 words for 256)
+
+1) Take the previous round key
+2) apply rotword (rotate all bytes by 1 to the left)
+3) xor the first byte with the round constant (figure out what that is)
+4) generate the new words 
