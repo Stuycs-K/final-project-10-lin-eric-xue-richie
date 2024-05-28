@@ -23,6 +23,22 @@ Brainstormed topic ideas + looked into AES
 AES Research:
 https://legacy.cryptool.org/en/cto/aes-animation
 
+## 5/24/24 
+
+AES Research:
+Studied the AES algorithm and how it works, think we plan on doing the 256 key version.
+Got the general idea of how the algorithm works, but since we are not using any built-in libraries, we will be creating our own map functions for the S-boxes and Rijndael MixColumns. We are also deciding whether we will need to be creating our own SHA key generators, or if we can use a library for that.
+
+AES is a symmetric key algorithm, meaning the same key is used for both encryption and decryption. The steps are as follows:
+1. Key Expansion
+2. Initial Round 
+3. Rounds (14 for 256 key)
+4. Final Round
+5. Decryption
+
+Will have to pad the message to be a multiple of 128 bits, or split if it is too long.
+Need to write our mapping functions for the S-boxes and Rijndael MixColumns. :\(
+
 
 ## Eric Lin
 
@@ -51,3 +67,4 @@ https://www.youtube.com/watch?v=4KiwoeDJFiA
 ### 5/27/24
 
 Learned and took (a lot) of notes on the iterative steps. Still need to learn how to generate round keys, but besides that I got everything else. 
+
