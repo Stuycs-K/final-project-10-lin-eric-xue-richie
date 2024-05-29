@@ -78,3 +78,7 @@ Learned and took (a lot) of notes on the iterative steps. Still need to learn ho
 https://www.geeksforgeeks.org/advanced-encryption-standard-aes/#
 
 Took notes on round key generation (still a bit lost, what's a round constant?)
+
+### 5/29/24
+
+worked on keygen
