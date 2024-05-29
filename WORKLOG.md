@@ -23,7 +23,7 @@ Brainstormed topic ideas + looked into AES
 AES Research:
 https://legacy.cryptool.org/en/cto/aes-animation
 
-## 5/24/24 
+### 5/24/24 
 
 AES Research:
 Studied the AES algorithm and how it works, think we plan on doing the 256 key version.
@@ -38,6 +38,9 @@ AES is a symmetric key algorithm, meaning the same key is used for both encrypti
 
 Will have to pad the message to be a multiple of 128 bits, or split if it is too long.
 Need to write our mapping functions for the S-boxes and Rijndael MixColumns. :\(
+
+### 5/28/24
+Write gen_256_key function to generate the 256 bit key and split_text and to_hex to prep for cleaning input text for multiple runs of AES encryption.
 
 
 ## Eric Lin
