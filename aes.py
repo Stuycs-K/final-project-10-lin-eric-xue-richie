@@ -37,6 +37,7 @@ inv_s_box: list = [
 ]
 
 import os
+
 class AES:
     text: str
     blocks: list
@@ -60,11 +61,28 @@ class AES:
 
     def to_hex(self) -> str:
         return "".join(map(str, self.blocks)).encode().hex()
+    
+    
+    hex = (lambda x: x.encode().hex())
+    
+    def sub_bytes(self, block: str) -> list:
+        return map(lambda x: hex(s_box[ord(x)]), block)
+    
+    def sub_bytes(self):
+        for block in self.blocks:
+            block = map(lambda x: hex(s_box[ord(x)]), block)
+            print("".join(block))
+            
+        
 
 example: str = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
 aes = AES(example)
 
-print(aes.to_hex())
-print(aes.blocks)
-print(aes.key)
+print(aes.to_hex()[0:4])
+print(aes.blocks[0:1])
+
+# print(aes.key)
+# print(aes.sub_bytes(aes.blocks[0]))
+aes.sub_bytes()
+print(aes.to_hex()[0:4])
