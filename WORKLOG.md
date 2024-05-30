@@ -45,6 +45,9 @@ Write gen_256_key function to generate the 256 bit key and split_text and to_hex
 ### 5/29/24
 Wrote subbytes today, a substitution function that uses the S-box to replace each byte in the state with a new byte. 
 
+### 5/30/24
+Wrote shiftrows today, a function that shifts the rows of the state by a certain offset. Only works for 4x4 matrices, so we will have to have make sure the input is a multiple of 128 bits.
+
 ## Eric Lin
 
 ### 5/20/24
