@@ -42,6 +42,8 @@ Need to write our mapping functions for the S-boxes and Rijndael MixColumns. :\(
 ### 5/28/24
 Write gen_256_key function to generate the 256 bit key and split_text and to_hex to prep for cleaning input text for multiple runs of AES encryption.
 
+### 5/29/24
+Wrote subbytes today, a substitution function that uses the S-box to replace each byte in the state with a new byte. 
 
 ## Eric Lin
 

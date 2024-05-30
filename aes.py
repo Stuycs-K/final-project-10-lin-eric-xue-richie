@@ -37,14 +37,11 @@ inv_s_box: list = [
 ]
 
 import os
+
 class AES:
-    text: str
-    blocks: list
-    
     def __init__(self, text: str):
         self.key = self.gen_256_key()  
         self.text  = text 
-        self.blocks = self.split_text()
 
     def gen_256_key(self) -> str:
         return os.urandom(32).hex()
@@ -58,13 +55,27 @@ class AES:
                 blocks.append(self.text[i: i+4])        
         return blocks
 
-    def to_hex(self) -> str:
-        return "".join(map(str, self.blocks)).encode().hex()
+    def to_hex(self, state) -> str:
+        return " ".join(map(str, state)).encode().hex()
+    
+    hex = (lambda x: x.encode().hex())
+    
+    def sub_bytes(self, state: str) -> str:
+        bytes_list = [state[i:i+2] for i in range(0, len(state), 2)]
+        subbed_bytes = [format(s_box[int(byte, 16)], '02x') for byte in bytes_list]
+        return "".join(subbed_bytes)
+    
+    
 
 example: str = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
 aes = AES(example)
 
-print(aes.to_hex())
-print(aes.blocks)
-print(aes.key)
+aes.split_text()
+
+print(aes.to_hex(aes.split_text()))
+
+print() 
+print(aes.sub_bytes(aes.to_hex(aes.split_text())))
+
+
