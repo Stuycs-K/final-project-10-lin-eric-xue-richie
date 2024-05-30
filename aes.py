@@ -82,16 +82,31 @@ wordlist = []
 # append the initial key to the word list (8 bytes long):
 def initWords(key):
     for i in range(0, 8):
-        wordlist.append(key.)
+        wordlist.append(key[i * 4: (i + 1) * 4])
 
 # everything here is to generate the key:
 def rotWord(word):
     return [word[1], word[2], word[3], word[0]]
 # subsitute bytes (richie got it )
-
+def sub_bytes(word):
+    return [s_box(b) for b in word]
 #rcon
 def xor_first_byte(word, counter):
     return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
+
+def keyExpansion(key):
+    initWords(key)
+    
+    counter = 8
+    # 14 rounds + 1 inital = 15 set, each with 4 bytes
+    while(len(wordlist) < 60):
+        word = wordlist[counter -1]
+
+        if(counter % 8 == 0):
+            # make sure rcon uses the correct counter
+            word = xor_first_byte(sub_bytes(rotWord(word)), counter)
+        
+
 
 
 
@@ -102,16 +117,19 @@ wordlist = []
 # append the initial key to the word list (8 bytes long):
 def initWords(key):
     for i in range(0, 8):
-        wordlist.append(key.)
+        wordlist.append(key[i* 4 : (i + 1)*4])
 
 # everything here is to generate the key:
 def rotWord(word):
-    return [word[1], word[2], word[3], word[0]]
+    return word[1:] + word[:1]
 # subsitute bytes (richie got it )
+
 
 #rcon
 def xor_first_byte(word, counter):
     return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
+
+def generate()
 
 
 
