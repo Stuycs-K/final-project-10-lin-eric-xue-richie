@@ -39,12 +39,12 @@ inv_s_box: list = [
 rcon = ['01', '02', '04', '08', '10', '20', '40', '80', '1B', '36' ]
 
 
+
 import os
 
 class AES:
     text: str
-    blocks: list
-    
+    blocks: list    
     def __init__(self, text: str):
         self.key = self.gen_256_key()  
         self.text  = text 
@@ -76,6 +76,26 @@ class AES:
 example: str = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
 
 aes = AES(example)
+
+wordlist = []
+
+# append the initial key to the word list (8 bytes long):
+def initWords(key):
+    for i in range(0, 8):
+        wordlist.append(key.)
+
+# everything here is to generate the key:
+def rotWord(word):
+    return [word[1], word[2], word[3], word[0]]
+# subsitute bytes (richie got it )
+
+#rcon
+def xor_first_byte(word, counter):
+    return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
+
+
+
+
 
 wordlist = []
 
