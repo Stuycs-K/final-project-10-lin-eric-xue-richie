@@ -61,21 +61,56 @@ class AES:
     hex = (lambda x: x.encode().hex())
     
     def sub_bytes(self, state: str) -> str:
-        bytes_list = [state[i:i+2] for i in range(0, len(state), 2)]
+        # split into 2 byte blocks 
+        state = "".join(state)
+        bytes_list = [state[i:i+2] for i in range(0, len(state), 2)]         
         subbed_bytes = [format(s_box[int(byte, 16)], '02x') for byte in bytes_list]
-        return "".join(subbed_bytes)
+        return subbed_bytes
     
+    def shift_rows(self, state: str) -> str:
+        state = "".join(state)
+        bytes_list = [state[i:i+2] for i in range(0, len(state), 2)]
+        # do nothing to first 4 bytes
+        # shift 2nd row by 1
+        if bytes_list[4] != "00":
+            bytes_list[4], bytes_list[5] = bytes_list[5], bytes_list[4]
+            bytes_list[5], bytes_list[6] = bytes_list[6], bytes_list[5]
+            bytes_list[6], bytes_list[7] = bytes_list[7], bytes_list[6]
+        # shift 3rd row by 2
+        if bytes_list[8] != "00":
+            bytes_list[8], bytes_list[10] = bytes_list[10], bytes_list[8]
+            bytes_list[9], bytes_list[11] = bytes_list[11], bytes_list[9]
+        # shift 4th row by 3
+        if bytes_list[12] != "00":
+            bytes_list[12], bytes_list[13] = bytes_list[13], bytes_list[12]
+            bytes_list[12], bytes_list[14] = bytes_list[14], bytes_list[12]
+            bytes_list[12], bytes_list[15] = bytes_list[15], bytes_list[12]
+        return bytes_list
     
-
-example: str = "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum."
+example: str = "Lorem Ipsum is s" # exactly 16 bytes
 
 aes = AES(example)
 
-aes.split_text()
-
 print(aes.to_hex(aes.split_text()))
 
-print() 
-print(aes.sub_bytes(aes.to_hex(aes.split_text())))
+print()
+pre_shift = aes.sub_bytes(aes.to_hex(aes.split_text()))
+print(pre_shift)
+print(" ".join(pre_shift[:4]))
+print(" ".join(pre_shift[4:8]))
+print(" ".join(pre_shift[8:12]))
+print(" ".join(pre_shift[12:16]))
+
+
+post_shift = aes.shift_rows(aes.sub_bytes(aes.to_hex(aes.split_text())))
+#put it into 4x4 matrix
+print(post_shift)
+print(" ".join(post_shift[:4]))
+print(" ".join(post_shift[4:8]))
+print(" ".join(post_shift[8:12]))
+print(" ".join(post_shift[12:16]))
+
+
+
 
 
