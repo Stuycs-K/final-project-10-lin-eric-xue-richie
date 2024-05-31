@@ -124,32 +124,18 @@ def keyExpansion(key):
 
         if(counter % 8 == 0):
             # make sure rcon uses the correct counter
-            word = xor_first_byte(sub_bytes(rotWord(word)), counter)
+            word = xor_first_byte(sub_bytes(rotWord(word)), (counter // 8) - 1)
+        elif(counter % 4 == 0):
+            word = sub_bytes(word)
         
+        # xor with 8 words ago
+        newwords = [wordlist[counter - 8][i] for i in range(4)]
+        wordlist.append(newwords)
 
-
-
-
-
-
-wordlist = []
-
-# append the initial key to the word list (8 bytes long):
-def initWords(key):
-    for i in range(0, 8):
-        wordlist.append(key[i* 4 : (i + 1)*4])
-
-# everything here is to generate the key:
-def rotWord(word):
-    return word[1:] + word[:1]
-# subsitute bytes (richie got it )
-
-
-#rcon
-def xor_first_byte(word, counter):
-    return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
-
-def generate()
+        counter += 1
+    return wordlist
+    
+    
 
 
 

@@ -84,3 +84,14 @@ if W[4i] =  W[4 (i-1)] xor modified result
    W[4i + 2] = W[4i] xor W[4(i-1) + 2]
    W[4i + 1] = W[4i] xor W[4(i-1) + 3]
 continue until all round keys are generated
+
+
+For each new word index: 
+  if i is a multiple of 8 
+    rotate previous word
+    apply subbytes
+    xor the first byte with the rcon value
+  if i is a mutple of 4
+    subbytes
+  else
+    xor with 8 words earlier 
