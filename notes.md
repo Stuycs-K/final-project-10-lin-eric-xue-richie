@@ -5,6 +5,7 @@ https://www.youtube.com/watch?v=O4xNJsjtN6E
 https://www.youtube.com/watch?v=NHuibtoL_qk
 
 https://legacy.cryptool.org/en/cto/aes-animation
+https://www.kavaliro.com/wp-content/uploads/2014/03/AES.pdf
 
 Iterative Process: 
 1) SubBytes
