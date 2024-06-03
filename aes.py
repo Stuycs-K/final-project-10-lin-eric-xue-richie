@@ -129,63 +129,6 @@ def keyExpansion(key):
 
 
 
-print(aes.to_hex(aes.split_text()))
-
-print()
-pre_shift = aes.sub_bytes(aes.to_hex(aes.split_text()))
-print(pre_shift)
-print(" ".join(pre_shift[:4]))
-print(" ".join(pre_shift[4:8]))
-print(" ".join(pre_shift[8:12]))
-print(" ".join(pre_shift[12:16]))
 
 
-post_shift = aes.shift_rows(aes.sub_bytes(aes.to_hex(aes.split_text())))
-#put it into 4x4 matrix
-print(post_shift)
-print(" ".join(post_shift[:4]))
-print(" ".join(post_shift[4:8]))
-print(" ".join(post_shift[8:12]))
-print(" ".join(post_shift[12:16]))
-
-
-
-
-    def gmul(self, a: int, b: int) -> int:
-        result = 0
-        for _ in range(8):
-            if b & 1:  # If the least significant bit of b is set
-                result ^= a  # Add a to the result
-            high_bit_set = a & 0x80  # Check if the highest bit of a is set
-            a <<= 1  
-            if high_bit_set:  # If the highest bit of a was set
-                a ^= 0x1B  # Apply the XOR with 0x1B (the irreducible polynomial for AES)
-            b >>= 1  
-        return result & 0xFF  
-
-    def mix_columns(self, state: str) -> str:
-        bytes_list = to_byte_array(state)
-
-        for i in range(0, 4):
-            # get the 4 bytes in the column
-            a = int(bytes_list[i], 16) 
-            b = int(bytes_list[i+4], 16)
-            c = int(bytes_list[i+8], 16)
-            d = int(bytes_list[i+12], 16)
-        
-            #apply the fixed_col matrix to the column
-            bytes_list[i]   = format(self.gmul(a, 0x02) ^ self.gmul(b, 0x03) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x01), "02x")
-            bytes_list[i+4] = format(self.gmul(a, 0x01) ^ self.gmul(b, 0x02) ^ self.gmul(c, 0x03) ^ self.gmul(d, 0x01), "02x")
-            bytes_list[i+8] = format(self.gmul(a, 0x01) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x02) ^ self.gmul(d, 0x03), "02x")
-            bytes_list[i+12]= format(self.gmul(a, 0x03) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x02), "02x")
-
-        return bytes_list
-    
-    def add_round_key(self, state: str, round_key: str) -> str:
-        bytes_list = to_byte_array(state)
-        round_key_list = to_byte_array(round_key)
-
-        for i in range(0, 16):
-            bytes_list[i] = format(int(bytes_list[i], 16) ^ int(round_key_list[i], 16), "02x")
-        return bytes_list
 
