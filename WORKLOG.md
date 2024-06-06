@@ -48,6 +48,9 @@ Wrote subbytes today, a substitution function that uses the S-box to replace eac
 ### 5/30/24
 Wrote shiftrows today, a function that shifts the rows of the state by a certain offset. Only works for 4x4 matrices, so we will have to have make sure the input is a multiple of 128 bits.
 
+### 6/5/2024
+WIP implementation of key_expandsion  in class
+
 ## Eric Lin
 
 ### 5/20/24
