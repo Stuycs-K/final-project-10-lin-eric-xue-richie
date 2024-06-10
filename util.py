@@ -36,6 +36,9 @@ inv_s_box: list = [
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 ]
 
+rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
+
+
 # Helper functions
 def to_byte_array(state: str) -> bytes:
     state = "".join(state)
@@ -45,3 +48,15 @@ def to_hex(state) -> str:
     return " ".join(format(ord(char), "02x") for char in "".join(state))
 
 hex = (lambda x: format(x, "02x")) # util function to convert bytes to hex
+
+def gmul(a: int, b: int) -> int:
+    result = 0
+    for _ in range(8):
+        if b & 1:  # If the least significant bit of b is set
+            result ^= a  # Add a to the result
+        high_bit_set = a & 0x80  # Check if the highest bit of a is set
+        a <<= 1  
+        if high_bit_set:  # If the highest bit of a was set
+            a ^= 0x1B  # Apply the XOR with 0x1B (the irreducible polynomial for AES)
+        b >>= 1  
+    return result & 0xFF 

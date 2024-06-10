@@ -71,5 +71,28 @@ We don't need to reduce in this case.
 
 How to get the round key: 
 
-The expanded key array 
+The first set of round key is the original key
 
+Word generation: 4 bytes (32 words for 256)
+
+1) Take the previous round key
+2) apply rotword (rotate all bytes by 1 to the left)
+3) xor the first byte with the round constant (figure out what that is)
+4) generate the n*the key gives us the first 8 words
+we need (14 + 1)* 4  = 60 words
+if W[4i] =  W[4 (i-1)] xor modified result
+   W[4i + 1] = W[4i] xor W[4(i-1) + 1]
+   W[4i + 2] = W[4i] xor W[4(i-1) + 2]
+   W[4i + 1] = W[4i] xor W[4(i-1) + 3]
+continue until all round keys are generated
+
+
+For each new word index: 
+  if i is a multiple of 8 
+    rotate previous word
+    apply subbytes
+    xor the first byte with the rcon value
+  if i is a mutple of 4
+    subbytes
+  else
+    xor with 8 words earlier 
