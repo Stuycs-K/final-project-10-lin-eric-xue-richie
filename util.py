@@ -34,6 +34,17 @@ def padding(data: bytes, block_size: int) -> bytes:
     padding = bytes([padding_len] * padding_len)
     return data + padding
 
+def unpadding(data: bytes, block_size: int) -> bytes:
+    pad_length = data[-1] 
+
+    if pad_length < 1 or pad_length > block_size:
+        raise ValueError("Invalid padding length")
+
+    if data[-pad_length:] != bytes([pad_length] * pad_length):
+        raise ValueError("Invalid padding bytes")
+
+    return data[:-pad_length]
+
 def gmul(a: int, b: int) -> int:
     result = 0
     for _ in range(8):

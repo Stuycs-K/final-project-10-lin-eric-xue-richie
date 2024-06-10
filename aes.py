@@ -2,8 +2,8 @@ from util import *
 import os
 import sys 
 
-from Crypto.Cipher import AES as PyCryptoAES
-from Crypto.Util.Padding import pad, unpad
+# from Crypto.Cipher import AES as PyCryptoAES
+# from Crypto.Util.Padding import pad, unpad
 
 class AES:
     text: str
@@ -13,8 +13,14 @@ class AES:
         self.key = self.gen_128_key()
         self.text  = to_hex(text)
 
+    def __init__(self, text: str, key: str):
+        self.key = key
+        self.text = text
+
     def gen_128_key(self) -> str:
-        return os.urandom(16).hex()
+        key = os.urandom(16).hex()
+        print(f"Generated key: {key}")
+        return key
 
     def split_text(self) -> list:
         padded_text = padding(self.text.encode(), 16)  # PKCS#7 padding
@@ -115,12 +121,12 @@ class AES:
             block = self.add_round_key(block, round_keys[10])
         return blocks  
     
-    def decrypt(self, encrypted_text: str) -> str:
-        cip = PyCryptoAES.new(self.key, PyCryptoAES.MODE_ECB)
-        encrypted_bytes = bytes.fromhex(encrypted_text)
-        decrypted_padded_text = cip.decrypt(encrypted_bytes)
-        decrypted_text = unpad(decrypted_padded_text, PyCryptoAES.block_size)
-        return decrypted_text.decode()
+    # def decrypt(self, encrypted_text: str) -> str:
+    #     cip = PyCryptoAES.new(self.key, PyCryptoAES.MODE_ECB)
+    #     encrypted_bytes = bytes.fromhex(encrypted_text)
+    #     decrypted_padded_text = cip.decrypt(encrypted_bytes)
+    #     decrypted_text = unpadding(decrypted_padded_text, PyCryptoAES.block_size)
+    #     return decrypted_text.decode()
     
 def encrypt(file_name: str) -> None:
     with open(file_name, "r") as file:
@@ -135,7 +141,8 @@ def encrypt(file_name: str) -> None:
 # def decrypt(file_name: str, key: str) -> None:
 #     with open(file_name, "r") as file:
 #         encrypted_text = file.read().strip()
-#     aes = AES("", key=key)  # Initialize with the same key used for encryption
+#     key_bytes = bytes.fromhex(key)
+#     aes = AES("", key=key_bytes)  # Initialize with the same key used for encryption
 #     decrypted_text = aes.decrypt(encrypted_text)
 #     with open("decrypted.txt", "w") as file:
 #         file.write(decrypted_text)
