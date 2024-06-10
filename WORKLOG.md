@@ -51,6 +51,15 @@ Wrote shiftrows today, a function that shifts the rows of the state by a certain
 ### 6/5/2024
 WIP implementation of key_expandsion  in class
 
+### 6/6/2024
+Finished key expansion, and started on the add_round_key function.
+
+### 6/7/2024
+Finished add_round_key, so began writing the encrypt function itself.
+
+### 6/9/2024
+Finished encrypt function, makefile, aes128 is done. 
+
 ## Eric Lin
 
 ### 5/20/24
