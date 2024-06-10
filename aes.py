@@ -2,24 +2,24 @@ from util import *
 import os
 import sys 
 
+from Crypto.Cipher import AES as PyCryptoAES
+from Crypto.Util.Padding import pad, unpad
+
 class AES:
     text: str
     blocks: list    
     def __init__(self, text: str):
         # self.key = "2b28ab097eaef7cf15d2154f16a6883c" test key
         self.key = self.gen_128_key()
-        self.text  = text 
+        self.text  = to_hex(text)
 
     def gen_128_key(self) -> str:
         return os.urandom(16).hex()
 
     def split_text(self) -> list:
-        blocks: list = []
-        for i in range(0, len(self.text), 4):
-            if len(self.text[i: i+4]) < 4:
-                blocks.append(self.text[i: i+4].ljust(4, " "))
-            else:
-                blocks.append(self.text[i: i+4])        
+        padded_text = pad(self.text.encode(), 16)  # PKCS#7 padding
+        blocks = [padded_text[i:i+16] for i in range(0, len(padded_text), 16)]
+        blocks = ["".join([format(byte, "02x") for byte in block]) for block in blocks]
         return blocks
     
     def sub_bytes(self, state: str) -> str:
@@ -71,24 +71,7 @@ class AES:
         for i in range(0, 16):
             bytes_list[i] = format(int(bytes_list[i], 16) ^ int(round_key_list[i], 16), "02x")
         return bytes_list
-    
-    def rot_word(self, state: str) -> str:
-        state = to_byte_array(state)
-        return state[1] + state[2] + state[3] + state[0]
-    
-    def rcon_xor(self, state: str, rcon: int) -> str:
-        state = to_byte_array(state)
-        # first_col = to_byte_array(first_col)
-        rcon = [rcon, 0x00, 0x00, 0x00]
-        # state = [format(int(first_col[j], 16) ^ int(state[j], 16), "02x") for j in range(4)]
-        state = [format(rcon[j] ^ int(state[j], 16), "02x") for j in range(4)]
-        return state
-    
-    def xor(self, state: str, col: str) -> str:
-        state = to_byte_array(state)
-        col = to_byte_array(col)
-        return [format(int(state[i], 16) ^ int(col[i], 16), "02x") for i in range(4)]
-    
+        
     def key_expansion(self) -> list:
         expanded_key = []
         key = to_byte_array(self.key)
@@ -99,9 +82,9 @@ class AES:
         for i in range(4, 44):
             temp = expanded_key[i - 1]
             if i % 4 == 0:
-                temp = self.rot_word(temp)
+                temp = rot_word(temp)
                 temp = self.sub_bytes(temp)
-                temp = self.rcon_xor(temp, rcon[rcon_counter])
+                temp = rcon_xor(temp, rcon[rcon_counter])
                 rcon_counter += 1
             temp = [format(int(expanded_key[i - 4][j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
             expanded_key.append([temp[j] for j in range(4)])
@@ -132,6 +115,13 @@ class AES:
             block = self.add_round_key(block, round_keys[10])
         return blocks  
     
+    def decrypt(self, encrypted_text: str) -> str:
+        cip = PyCryptoAES.new(self.key, PyCryptoAES.MODE_ECB)
+        encrypted_bytes = bytes.fromhex(encrypted_text)
+        decrypted_padded_text = cip.decrypt(encrypted_bytes)
+        decrypted_text = unpad(decrypted_padded_text, PyCryptoAES.block_size)
+        return decrypted_text.decode()
+    
 def encrypt(file_name: str) -> None:
     with open(file_name, "r") as file:
         text = file.read()
@@ -141,6 +131,15 @@ def encrypt(file_name: str) -> None:
         for block in blocks:
             file.write("".join(block))
     print("Encryption successful, written to encrypted.txt")
+
+# def decrypt(file_name: str, key: str) -> None:
+#     with open(file_name, "r") as file:
+#         encrypted_text = file.read().strip()
+#     aes = AES("", key=key)  # Initialize with the same key used for encryption
+#     decrypted_text = aes.decrypt(encrypted_text)
+#     with open("decrypted.txt", "w") as file:
+#         file.write(decrypted_text)
+#     print("Decryption successful, written to decrypted.txt")
 
 if __name__ == '__main__':
     globals()[sys.argv[1]](* sys.argv[2:])

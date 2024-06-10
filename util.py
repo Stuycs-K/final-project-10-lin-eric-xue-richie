@@ -60,3 +60,20 @@ def gmul(a: int, b: int) -> int:
             a ^= 0x1B  # Apply the XOR with 0x1B (the irreducible polynomial for AES)
         b >>= 1  
     return result & 0xFF 
+
+def rot_word(state: str) -> str:
+    state = to_byte_array(state)
+    return state[1] + state[2] + state[3] + state[0]
+
+def rcon_xor(state: str, rcon: int) -> str:
+    state = to_byte_array(state)
+    # first_col = to_byte_array(first_col)
+    rcon = [rcon, 0x00, 0x00, 0x00]
+    # state = [format(int(first_col[j], 16) ^ int(state[j], 16), "02x") for j in range(4)]
+    state = [format(rcon[j] ^ int(state[j], 16), "02x") for j in range(4)]
+    return state
+
+def xor(state: str, col: str) -> str:
+    state = to_byte_array(state)
+    col = to_byte_array(col)
+    return [format(int(state[i], 16) ^ int(col[i], 16), "02x") for i in range(4)]
