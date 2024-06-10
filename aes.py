@@ -17,7 +17,7 @@ class AES:
         return os.urandom(16).hex()
 
     def split_text(self) -> list:
-        padded_text = pad(self.text.encode(), 16)  # PKCS#7 padding
+        padded_text = padding(self.text.encode(), 16)  # PKCS#7 padding
         blocks = [padded_text[i:i+16] for i in range(0, len(padded_text), 16)]
         blocks = ["".join([format(byte, "02x") for byte in block]) for block in blocks]
         return blocks
