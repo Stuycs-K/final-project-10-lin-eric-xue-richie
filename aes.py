@@ -1,17 +1,16 @@
-
-
-
 from util import *
 import os
+import sys 
 
 class AES:
     text: str
     blocks: list    
     def __init__(self, text: str):
-        self.key = "2b28ab097eaef7cf15d2154f16a6883c"
+        # self.key = "2b28ab097eaef7cf15d2154f16a6883c" test key
+        self.key = self.gen_128_key()
         self.text  = text 
 
-    def gen_256_key(self) -> str:
+    def gen_128_key(self) -> str:
         return os.urandom(16).hex()
 
     def split_text(self) -> list:
@@ -81,7 +80,6 @@ class AES:
         state = to_byte_array(state)
         # first_col = to_byte_array(first_col)
         rcon = [rcon, 0x00, 0x00, 0x00]
-        #xor temp with first column and rcon
         # state = [format(int(first_col[j], 16) ^ int(state[j], 16), "02x") for j in range(4)]
         state = [format(rcon[j] ^ int(state[j], 16), "02x") for j in range(4)]
         return state
@@ -111,7 +109,11 @@ class AES:
         # format the expanded key into their round keys
         keys = []
         for i in range(0, 44, 4):
-            keys.append(expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3])
+            temp_key = expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3]
+            for j in range(4):
+                temp_key[j] = expanded_key[i][j] + expanded_key[i+1][j] + expanded_key[i+2][j] + expanded_key[i+3][j]
+            temp_key = "".join(temp_key[:4])
+            keys.append(temp_key)
         return keys
 
     def encrypt(self) -> str:
@@ -124,13 +126,21 @@ class AES:
                 block = self.shift_rows(block)
                 block = self.mix_columns(block)
                 block = self.add_round_key(block, round_keys[i])
+                
             block = self.sub_bytes(block)
             block = self.shift_rows(block)
             block = self.add_round_key(block, round_keys[10])
         return blocks  
     
-example = "Lorem Ipsum is s"
-aes = AES(example)
+def encrypt(file_name: str) -> None:
+    with open(file_name, "r") as file:
+        text = file.read()
+    aes = AES(text)
+    blocks = aes.encrypt()
+    with open("encrypted.txt", "w") as file:
+        for block in blocks:
+            file.write("".join(block))
+    print("Encryption successful, written to encrypted.txt")
 
-expanded_key = aes.key_expansion()
-
+if __name__ == '__main__':
+    globals()[sys.argv[1]](* sys.argv[2:])
