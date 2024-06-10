@@ -12,7 +12,7 @@ class AES:
         self.text  = text 
 
     def gen_256_key(self) -> str:
-        return os.urandom(32).hex()
+        return os.urandom(16).hex()
 
     def split_text(self) -> list:
         blocks: list = []
@@ -25,7 +25,7 @@ class AES:
     
     def sub_bytes(self, state: str) -> str:
         bytes_list = to_byte_array(state)       
-        subbed_bytes_list = [hex(s_box[int(byte, 16)]).lstrip("0x") for byte in bytes_list]
+        subbed_bytes_list = [format(s_box[int(byte, 16)], "02x") for byte in bytes_list]
         return subbed_bytes_list
     
     def shift_rows(self, state: str) -> str:
@@ -77,12 +77,13 @@ class AES:
         state = to_byte_array(state)
         return state[1] + state[2] + state[3] + state[0]
     
-    def rcon_xor(self, state: str, first_col: str, rcon: int) -> str:
+    def rcon_xor(self, state: str, rcon: int) -> str:
         state = to_byte_array(state)
-        first_col = to_byte_array(first_col)
+        # first_col = to_byte_array(first_col)
+        rcon = [rcon, 0x00, 0x00, 0x00]
         #xor temp with first column and rcon
-        state = [format(int(first_col[j], 16) ^ int(state[j], 16), "02x") for j in range(4)]
-        state = [format(int(state[j], 16) ^ rcon, "02x") for j in range(4)]
+        # state = [format(int(first_col[j], 16) ^ int(state[j], 16), "02x") for j in range(4)]
+        state = [format(rcon[j] ^ int(state[j], 16), "02x") for j in range(4)]
         return state
     
     def xor(self, state: str, col: str) -> str:
@@ -91,90 +92,45 @@ class AES:
         return [format(int(state[i], 16) ^ int(col[i], 16), "02x") for i in range(4)]
     
     def key_expansion(self) -> list:
+        expanded_key = []
         key = to_byte_array(self.key)
-        expanded_key = key[:]
-        print(expanded_key)
-        for i in range(8, 60):
-            temp = expanded_key[i - 5] + expanded_key[i - 1] + expanded_key[i + 3] + expanded_key[i + 7]
-            print("last_col", temp)
-            if i % 8 == 0:
-                temp = self.rot_word(temp)
-                print("post rot word:", temp)
-                temp = self.sub_bytes(temp)
-                print("post sub byte", temp)
-                first_col = expanded_key[i - 8] + expanded_key[i - 4] + expanded_key[i] + expanded_key[i + 4]
-                print(first_col)
-                #xor temp with first column and rcon
-                temp = to_byte_array(self.rcon_xor(temp, first_col, rcon[i // 10]))
-                print("post rcon xor", temp)
-                expanded_key += temp
-                print(expanded_key)
-            elif i % 8 == 4:
-                temp = self.sub_word(temp)
-            # expanded_key += [format(int(expanded_key[-32 + j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
-
-        return expanded_key 
-    
-
-# wordlist = []
-
-# def initWords(key):
-#     for i in range(0, 32, 8):
-#         wordlist.append([key[i], key[i+1], key[i+2], key[i+3]])
-#     return wordlist
-
-# # everything here is to generate the key:
-# def rotWord(word):
-#     return [word[1], word[2], word[3], word[0]]
-# # subsitute bytes (richie got it )
-# def sub_bytes(word):
-#     return [s_box(b) for b in word]
-# #rcon
-# def xor_first_byte(word, counter):
-#     return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
-
-# def keyExpansion(key):
-#     initWords(key)
-    
-#     counter = 8
-#     # 14 rounds + 1 inital = 15 set, each with 4 bytes
-#     while(len(wordlist) < 60):
-#         word = wordlist[counter -1]
-
-#         if(counter % 8 == 0):
-#             # make sure rcon uses the correct counter
-#             word = xor_first_byte(sub_bytes(rotWord(word)), (counter // 8) - 1)
-#         elif(counter % 4 == 0):
-#             word = sub_bytes(word)
         
-#         # xor with 8 words ago
-#         newwords = [wordlist[counter - 8][i] for i in range(4)]
-#         wordlist.append(newwords)
+        for i in range(0, 4):
+            expanded_key.append([key[i], key[i+4], key[i+8], key[i+12]])
+        rcon_counter = 0
+        for i in range(4, 44):
+            temp = expanded_key[i - 1]
+            if i % 4 == 0:
+                temp = self.rot_word(temp)
+                temp = self.sub_bytes(temp)
+                temp = self.rcon_xor(temp, rcon[rcon_counter])
+                rcon_counter += 1
+            temp = [format(int(expanded_key[i - 4][j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
+            expanded_key.append([temp[j] for j in range(4)])
+        
+        # format the expanded key into their round keys
+        keys = []
+        for i in range(0, 44, 4):
+            keys.append(expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3])
+        return keys
 
-#         counter += 1
-#     return wordlist
-    
-# keyExpansion("2b28ab097eaef7cf15d2154f16a6883c")
-# print(wordlist)
+    def encrypt(self) -> str:
+        blocks = self.split_text()
+        round_keys = self.key_expansion()
+        for block in blocks:
+            block = self.add_round_key(block, round_keys[0])
+            for i in range(1, 10):
+                block = self.sub_bytes(block)
+                block = self.shift_rows(block)
+                block = self.mix_columns(block)
+                block = self.add_round_key(block, round_keys[i])
+            block = self.sub_bytes(block)
+            block = self.shift_rows(block)
+            block = self.add_round_key(block, round_keys[10])
+        return blocks  
     
 example = "Lorem Ipsum is s"
 aes = AES(example)
-print(aes.key_expansion())
 
-
-
-
-
-
-
-
-    
-
-example = "Lorem Ipsum is s"
-aes = AES(example)
-print(to_byte_array(aes.key))
-print(aes.key_expansion())
-
-
-
+expanded_key = aes.key_expansion()
 
