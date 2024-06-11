@@ -1,6 +1,3 @@
-
-
-
 from util import *
 import os
 
@@ -8,7 +5,7 @@ class AES:
     text: str
     blocks: list    
     def __init__(self, text: str):
-        self.key = self.gen_256_key()  
+        self.key = "2B28AB097EAEF7CF15D2154F1646883C"
         self.text  = text 
 
     def gen_256_key(self) -> str:
@@ -24,8 +21,8 @@ class AES:
         return blocks
     
     def sub_bytes(self, state: str) -> str:
-        bytes_list = to_byte_array(state)         
-        subbed_bytes_list = [hex(s_box[int(byte, 16)]).lstrip("0x") for byte in bytes_list]
+        bytes_list = to_byte_array(state)
+        subbed_bytes_list = [hex_format(s_box[int(byte, 16)]).lstrip("0x") for byte in bytes_list]
         return subbed_bytes_list
     
     def shift_rows(self, state: str) -> str:
@@ -61,20 +58,15 @@ class AES:
 
     def mix_columns(self, state: str) -> str:
         bytes_list = to_byte_array(state)
-
         for i in range(0, 4):
-            # get the 4 bytes in the column
-            a = int(bytes_list[i], 16) 
+            a = int(bytes_list[i], 16)
             b = int(bytes_list[i+4], 16)
             c = int(bytes_list[i+8], 16)
             d = int(bytes_list[i+12], 16)
-        
-            #apply the fixed_col matrix to the column
-            bytes_list[i]   = format(self.gmul(a, 0x02) ^ self.gmul(b, 0x03) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x01), "02x")
-            bytes_list[i+4] = format(self.gmul(a, 0x01) ^ self.gmul(b, 0x02) ^ self.gmul(c, 0x03) ^ self.gmul(d, 0x01), "02x")
-            bytes_list[i+8] = format(self.gmul(a, 0x01) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x02) ^ self.gmul(d, 0x03), "02x")
-            bytes_list[i+12]= format(self.gmul(a, 0x03) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x02), "02x")
-
+            bytes_list[i]   = hex_format(self.gmul(a, 0x02) ^ self.gmul(b, 0x03) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x01))
+            bytes_list[i+4] = hex_format(self.gmul(a, 0x01) ^ self.gmul(b, 0x02) ^ self.gmul(c, 0x03) ^ self.gmul(d, 0x01))
+            bytes_list[i+8] = hex_format(self.gmul(a, 0x01) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x02) ^ self.gmul(d, 0x03))
+            bytes_list[i+12]= hex_format(self.gmul(a, 0x03) ^ self.gmul(b, 0x01) ^ self.gmul(c, 0x01) ^ self.gmul(d, 0x02))
         return bytes_list
     
     def add_round_key(self, state: str, round_key: str) -> str:
@@ -84,47 +76,64 @@ class AES:
         for i in range(0, 16):
             bytes_list[i] = format(int(bytes_list[i], 16) ^ int(round_key_list[i], 16), "02x")
         return bytes_list
+    
 
-wordlist = []
+    def keyExpansion(self):
+        wordlist = []
+        initWords(self.key, wordlist)
+        print(f"Initial Words: {wordlist}")
+        counter = 8
+        while(len(wordlist) < 60):
+            word = wordlist[counter - 1]
+            print(f"Counter: {counter}, Word: {word}")
+
+            if(counter % 8 == 0):
+                rotated = rotWord(word)
+                subbed = self.sub_bytes(rotated)
+                word = xor_first_byte(subbed, (counter // 8) - 1)
+                print(f"RotWord: {rotated}, SubBytes: {subbed}, Rcon XOR: {word}")
+            elif(counter % 4 == 0):
+                word = self.sub_bytes(word)
+                print(f"SubBytes: {word}")
+            
+            newword = [hex_format(int(wordlist[counter - 8][i], 16) ^ int(word[i], 16)) for i in range(8)]
+            wordlist.append(newword)
+            counter += 1
+            print(f"New Wordlist: {wordlist[-4:]}")
+        return wordlist
+
 
 # append the initial key to the word list (8 bytes long):
-def initWords(key):
+def initWords(key, wordlist):
+    print(f"key: {key}")
     for i in range(0, 8):
         wordlist.append(key[i * 4: (i + 1) * 4])
 
-# everything here is to generate the key:
+# # everything here is to generate the key:
 def rotWord(word):
     return [word[1], word[2], word[3], word[0]]
-# subsitute bytes (richie got it )
-def sub_bytes(word):
-    return [s_box(b) for b in word]
-#rcon
+# # subsitute bytes (richie got it )
+# def sub_bytes(word):
+#     return [s_box[b] for b in word]
+# #rcon
 def xor_first_byte(word, counter):
-    return [word[0] ^ rcon[counter], word[1], word[2], word[3]]
+    # print(f"len word: {len(word)}")
+    # print(f"first word: {int(word[0], 16)}")
+    # print(f"rcon counter: {rcon[counter]}")
+    print(word)
+    return [int(word[0], 16) ^ rcon[counter], int(word[1], 16), int(word[2], 16), int(word[3], 16)]
+    # return [hex(word[0]) ^ rcon[counter], hex(word[1]), hex(word[2]), hex(word[3])]
 
-def keyExpansion(key):
-    initWords(key)
-    
-    counter = 8
-    # 14 rounds + 1 inital = 15 set, each with 4 bytes
-    while(len(wordlist) < 60):
-        word = wordlist[counter -1]
 
-        if(counter % 8 == 0):
-            # make sure rcon uses the correct counter
-            word = xor_first_byte(sub_bytes(rotWord(word)), (counter // 8) - 1)
-        elif(counter % 4 == 0):
-            word = sub_bytes(word)
-        
-        # xor with 8 words ago
-        newwords = [wordlist[counter - 8][i] for i in range(4)]
-        wordlist.append(newwords)
+key = [0x2B, 0x28, 0xAB, 0x09, 0x7E, 0xAE, 0xF7, 0xCF, 0x15, 0xD2, 0x15, 0x4F, 0x16, 0x46, 0x88, 0x3C, 0x2B, 0x28, 0xAB, 0x09, 0x7E, 0xAE, 0xF7, 0xCF, 0x15, 0xD2, 0x15, 0x4F, 0x16, 0x46, 0x88, 0x3C]
 
-        counter += 1
-    return wordlist
-    
-    
+test = AES("")
+# print(test.gen_256_key())
+print(test.keyExpansion())
 
+# print(wordlist)
+# keyExpansion(key)
+# print(wordlist)
 
 
 

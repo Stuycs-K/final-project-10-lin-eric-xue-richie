@@ -36,7 +36,7 @@ inv_s_box: list = [
     0x17, 0x2b, 0x04, 0x7e, 0xba, 0x77, 0xd6, 0x26, 0xe1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0c, 0x7d
 ]
 
-rcon = ['01', '02', '04', '08', '10', '20', '40', '80', '1B', '36' ]
+rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
 
 
 # Helper functions
@@ -47,4 +47,5 @@ def to_byte_array(state: str) -> bytes:
 def to_hex(state) -> str:
     return " ".join(format(ord(char), "02x") for char in "".join(state))
 
-hex = (lambda x: format(x, "02x")) # util function to convert bytes to hex
+# hex = (lambda x: format(x, "02x")) # util function to convert bytes to hex
+hex_format = (lambda x: format(x, "02x"))
