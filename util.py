@@ -25,7 +25,9 @@ def to_byte_array(state: str) -> bytes:
     return [state[i:i+2] for i in range(0, len(state), 2)]
 
 def to_hex(state) -> str:
-    return " ".join(format(ord(char), "02x") for char in "".join(state))
+    hexout = " ".join(format(ord(char), "02x") for char in "".join(state))
+    hexout = hexout.replace(" ", "0")
+    return hexout
 
 hex = (lambda x: format(x, "02x")) # util function to convert bytes to hex
 
