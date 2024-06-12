@@ -4,8 +4,9 @@ from aes import *
 class TestAES(unittest.TestCase):
     def setUp(self):
         self.example = "Thats my Kung Fu"
-        self.key = "2b28ab097eaef7cf15d2154f16a6883c"
-        self.aes = AES(self.example, "2b28ab097eaef7cf15d2154f16a6883c")
+        # self.key = "2b28ab097eaef7cf15d2154f16a6883c"
+        # self.key = "5468617473206D79204B756E67204675"
+        self.aes = AES(self.example)
         self.input_state = "63EB9FA02F9392C0AFC7AB30A220CB2B"
         self.expected_output = "BA84E81B75A48D40F48D067D7A320E5D"
 
@@ -15,7 +16,7 @@ class TestAES(unittest.TestCase):
         actual_hex = to_byte_array(to_hex(self.aes.text))
         actual_hex = " ".join(actual_hex)
         self.assertEqual(actual_hex, expected_hex)
-
+        
     def test_sub_bytes(self):
         pre_shift = "4c 6f 72 65 6d 20 49 70 73 75 6d 20 69 73 20 73"
         expected_subbed = ['29', '6f', '76', '40', '6f', '6b', '3c', '77', '63', '3b', 'c5', '63', '8f', 'c5', '6b', '3c', '77', '63', 'f9', 'c5', '7b', 'b7', 'c5', '7b']

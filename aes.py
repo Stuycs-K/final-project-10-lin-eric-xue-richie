@@ -1,31 +1,22 @@
 from util import *
 import os
 import sys 
-
-# from Crypto.Cipher import AES as PyCryptoAES
-# from Crypto.Util.Padding import pad, unpad
-
 class AES:
     text: str
-    blocks: list    
+
     def __init__(self, text: str):
-        # self.key = "2b28ab097eaef7cf15d2154f16a6883c" test key
-        self.key = self.gen_128_key()
+        self.key = "5468617473206D79204B756E67204675"
+        #self.key = self.gen_128_key()
         self.text  = to_hex(text)
 
-    def __init__(self, text: str, key: str):
-        self.key = key
-        self.text = text
-
     def gen_128_key(self) -> str:
-        key = os.urandom(16).hex()
-        print(f"Generated key: {key}")
-        return key
+        return os.urandom(16).hex()
 
     def split_text(self) -> list:
-        padded_text = padding(self.text.encode(), 16)  # PKCS#7 padding
-        blocks = [padded_text[i:i+16] for i in range(0, len(padded_text), 16)]
-        blocks = ["".join([format(byte, "02x") for byte in block]) for block in blocks]
+        blocks = []
+        formatted_text = self.text.replace(" ", "")
+        for i in range(0, len(formatted_text), 32):
+            blocks.append(to_byte_array(formatted_text[i:i+32]))
         return blocks
     
     def sub_bytes(self, state: str) -> str:
@@ -80,8 +71,7 @@ class AES:
         
     def key_expansion(self) -> list:
         expanded_key = []
-        key = to_byte_array(self.key)
-        
+        key = to_byte_array(self.key)        
         for i in range(0, 4):
             expanded_key.append([key[i], key[i+4], key[i+8], key[i+12]])
         rcon_counter = 0
@@ -107,6 +97,7 @@ class AES:
 
     def encrypt(self) -> str:
         blocks = self.split_text()
+        returnBlocks = []
         round_keys = self.key_expansion()
         for block in blocks:
             block = self.add_round_key(block, round_keys[0])
@@ -119,34 +110,20 @@ class AES:
             block = self.sub_bytes(block)
             block = self.shift_rows(block)
             block = self.add_round_key(block, round_keys[10])
-        return blocks  
-    
-    # def decrypt(self, encrypted_text: str) -> str:
-    #     cip = PyCryptoAES.new(self.key, PyCryptoAES.MODE_ECB)
-    #     encrypted_bytes = bytes.fromhex(encrypted_text)
-    #     decrypted_padded_text = cip.decrypt(encrypted_bytes)
-    #     decrypted_text = unpadding(decrypted_padded_text, PyCryptoAES.block_size)
-    #     return decrypted_text.decode()
+            returnBlocks.append(block)
+        return returnBlocks  
     
 def encrypt(file_name: str) -> None:
     with open(file_name, "r") as file:
         text = file.read()
     aes = AES(text)
+    print("Key: ", aes.key)
     blocks = aes.encrypt()
+    print("Encrypted blocks: ", blocks)
     with open("encrypted.txt", "w") as file:
         for block in blocks:
             file.write("".join(block))
     print("Encryption successful, written to encrypted.txt")
-
-# def decrypt(file_name: str, key: str) -> None:
-#     with open(file_name, "r") as file:
-#         encrypted_text = file.read().strip()
-#     key_bytes = bytes.fromhex(key)
-#     aes = AES("", key=key_bytes)  # Initialize with the same key used for encryption
-#     decrypted_text = aes.decrypt(encrypted_text)
-#     with open("decrypted.txt", "w") as file:
-#         file.write(decrypted_text)
-#     print("Decryption successful, written to decrypted.txt")
 
 if __name__ == '__main__':
     globals()[sys.argv[1]](* sys.argv[2:])

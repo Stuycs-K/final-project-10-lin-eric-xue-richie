@@ -18,15 +18,19 @@ s_box: list= [
 ]
 rcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36]
 
-
+import os
 # Helper functions
+def gen_128_key() -> str:
+        key = os.urandom(16).hex()
+        print(f"Generated key: {key}")
+        return key
+
 def to_byte_array(state: str) -> bytes:
     state = "".join(state)
     return [state[i:i+2] for i in range(0, len(state), 2)]
 
 def to_hex(state) -> str:
     hexout = " ".join(format(ord(char), "02x") for char in "".join(state))
-    hexout = hexout.replace(" ", "0")
     return hexout
 
 hex = (lambda x: format(x, "02x")) # util function to convert bytes to hex
