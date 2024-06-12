@@ -102,9 +102,10 @@ def encrypt(file_name: str) -> None:
     with open(file_name, "r") as file:
         text = file.read()
     aes = AES(text)
-    print("Key: ", aes.key)
+    print("Text:", text)
+    print("Key:", aes.key)
     blocks = aes.encrypt()
-    print("Encrypted blocks: ", blocks)
+    print("Encrypting...")
     with open("encrypted.txt", "w") as file:
         for block in blocks:
             file.write("".join(block))
