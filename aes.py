@@ -24,43 +24,26 @@ class AES:
         subbed_bytes_list = [format(s_box[int(byte, 16)], "02x") for byte in bytes_list]
         return subbed_bytes_list
     
-    def shift_rows(self, state: str) -> str:
-        bytes_list = to_byte_array(state)
-        # do nothing to first 4 bytes
-        # shift 2nd row by 1
-        if bytes_list[4] != "00":
-            bytes_list[4], bytes_list[5] = bytes_list[5], bytes_list[4]
-            bytes_list[5], bytes_list[6] = bytes_list[6], bytes_list[5]
-            bytes_list[6], bytes_list[7] = bytes_list[7], bytes_list[6]
-        # shift 3rd row by 2
-        if bytes_list[8] != "00":
-            bytes_list[8], bytes_list[10] = bytes_list[10], bytes_list[8]
-            bytes_list[9], bytes_list[11] = bytes_list[11], bytes_list[9]
-        # shift 4th row by 3
-        if bytes_list[12] != "00":
-            bytes_list[12], bytes_list[13] = bytes_list[13], bytes_list[12]
-            bytes_list[12], bytes_list[14] = bytes_list[14], bytes_list[12]
-            bytes_list[12], bytes_list[15] = bytes_list[15], bytes_list[12]
-        return bytes_list
+    def shift_rows(self, state: list) -> list:
+        state_matrix = [state[i:i + 4] for i in range(0, 16, 4)]
+        for i in range(1, 4):
+            state_matrix[i] = state_matrix[i][i:] + state_matrix[i][:i]
+        return [state_matrix[j][i] for i in range(4) for j in range(4)]
     
-    def mix_columns(self, state: str) -> str:
-        bytes_list = to_byte_array(state)
+    def mix_columns(self, state: list) -> list:
+        state_matrix = [state[i:i + 4] for i in range(0, 16, 4)]
+        for i in range(4):
+            a = int(state_matrix[0][i], 16)
+            b = int(state_matrix[1][i], 16)
+            c = int(state_matrix[2][i], 16)
+            d = int(state_matrix[3][i], 16)
 
-        for i in range(0, 4):
-            # get the 4 bytes in the column
-            a = int(bytes_list[i], 16) 
-            b = int(bytes_list[i+4], 16)
-            c = int(bytes_list[i+8], 16)
-            d = int(bytes_list[i+12], 16)
-        
-            #apply the fixed_col matrix to the column
-            bytes_list[i]   = format(gmul(a, 0x02) ^ gmul(b, 0x03) ^ gmul(c, 0x01) ^ gmul(d, 0x01), "02x")
-            bytes_list[i+4] = format(gmul(a, 0x01) ^ gmul(b, 0x02) ^ gmul(c, 0x03) ^ gmul(d, 0x01), "02x")
-            bytes_list[i+8] = format(gmul(a, 0x01) ^ gmul(b, 0x01) ^ gmul(c, 0x02) ^ gmul(d, 0x03), "02x")
-            bytes_list[i+12]= format(gmul(a, 0x03) ^ gmul(b, 0x01) ^ gmul(c, 0x01) ^ gmul(d, 0x02), "02x")
+            state_matrix[0][i] = format(gmul(a, 0x02) ^ gmul(b, 0x03) ^ gmul(c, 0x01) ^ gmul(d, 0x01), "02x")
+            state_matrix[1][i] = format(gmul(a, 0x01) ^ gmul(b, 0x02) ^ gmul(c, 0x03) ^ gmul(d, 0x01), "02x")
+            state_matrix[2][i] = format(gmul(a, 0x01) ^ gmul(b, 0x01) ^ gmul(c, 0x02) ^ gmul(d, 0x03), "02x")
+            state_matrix[3][i] = format(gmul(a, 0x03) ^ gmul(b, 0x01) ^ gmul(c, 0x01) ^ gmul(d, 0x02), "02x")
+        return [state_matrix[j][i] for i in range(4) for j in range(4)]
 
-        return bytes_list
-    
     def add_round_key(self, state: str, round_key: str) -> str:
         bytes_list = to_byte_array(state)
         round_key_list = to_byte_array(round_key)
@@ -101,15 +84,20 @@ class AES:
         round_keys = self.key_expansion()
         for block in blocks:
             block = self.add_round_key(block, round_keys[0])
+            print("Round key: ", round_keys[0])
+            # print("Block: ", block)
             for i in range(1, 10):
                 block = self.sub_bytes(block)
                 block = self.shift_rows(block)
                 block = self.mix_columns(block)
                 block = self.add_round_key(block, round_keys[i])
+                # print("Block: ", block)
+                print("Round key: ", round_keys[i])
                 
             block = self.sub_bytes(block)
             block = self.shift_rows(block)
             block = self.add_round_key(block, round_keys[10])
+            print("Round key: ", round_keys[10])
             returnBlocks.append(block)
         return returnBlocks  
     
