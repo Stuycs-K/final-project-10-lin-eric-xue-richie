@@ -35,9 +35,9 @@ class AES:
         # Row 2: Shift left by 2
         state_matrix[2] = state_matrix[2][2:] + state_matrix[2][:2]
         # Row 3: Shift left by 3
-        state_matrix[3] = state_matrix[3][3:4] + state_matrix[3][:3]
+        state_matrix[3] = state_matrix[3][3:] + state_matrix[3][:3]
         shifted_state = state_matrix[0] + state_matrix[1] + state_matrix[2] + state_matrix[3]
-        shifted_state = to_byte_array(''.join(shifted_state))     
+        shifted_state = to_byte_array(''.join(shifted_state)) 
         return shifted_state
 
     def mix_columns(self, state: str) -> list:
@@ -95,8 +95,6 @@ class AES:
             block = self.sub_bytes(block)
             block = self.shift_rows(block)
             block = self.add_round_key(block, round_keys[10])
-            print("Block: ", block)
-            #print("Round key: ", round_keys[10])
             returnBlocks.append(block)
         return returnBlocks  
     
