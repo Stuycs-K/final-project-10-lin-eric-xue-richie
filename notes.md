@@ -42,7 +42,7 @@ Multiplication:
 0 * 0 = 0, 0 * 1 = 0,  1 * 0 = 0, 1 * 1 = 1
 
 An irreducible polynomial over GF(2) is a polynomial that cannot be factored into the product of two non-constant polynomials over GF(2). in other words it has no divisors other than itself and the constant polynomial 1. This polynomial serves as the modulus, ensuring every non-zero element has a multiplicative inverse. 
-- common polynomial : x^8 + x^4 + x^3 = x + 1
+- common polynomial : x^8 + x^4 + x^3 + x + 1
 
 Multiplicative Inverse: a(x) * b(x) = 1 mod P(x)
 - use the extended Euclidean Algorithm: 
