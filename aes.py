@@ -24,14 +24,25 @@ class AES:
         subbed_bytes_list = [format(s_box[int(byte, 16)], "02x") for byte in bytes_list]
         return subbed_bytes_list
     
-    def shift_rows(self, state: list) -> list:
-        state_matrix = [state[i:i + 4] for i in range(0, 16, 4)]
-        for i in range(1, 4):
-            state_matrix[i] = state_matrix[i][i:] + state_matrix[i][:i]
-        return [state_matrix[j][i] for i in range(4) for j in range(4)]
-    
-    def mix_columns(self, state: list) -> list:
-        state_matrix = [state[i:i + 4] for i in range(0, 16, 4)]
+    def shift_rows(self, state: str) -> str:
+        #column arrays
+        state_matrix = [[], [], [], []]
+        for i in range(0, 16):
+            state_matrix[i % 4].append(state[i])
+        # Row 0: No shift
+        # Row 1: Shift left by 1
+        state_matrix[1] = state_matrix[1][1:] + state_matrix[1][:1]
+        # Row 2: Shift left by 2
+        state_matrix[2] = state_matrix[2][2:] + state_matrix[2][:2]
+        # Row 3: Shift left by 3
+        state_matrix[3] = state_matrix[3][3:4] + state_matrix[3][:3]
+        shifted_state = state_matrix[0] + state_matrix[1] + state_matrix[2] + state_matrix[3]
+        shifted_state = to_byte_array(''.join(shifted_state))     
+        return shifted_state
+
+    def mix_columns(self, state: str) -> list:
+        #row arrays
+        state_matrix = [state[i:i + 4] for i in range(0, len(state), 4)]
         for i in range(4):
             a = int(state_matrix[0][i], 16)
             b = int(state_matrix[1][i], 16)
@@ -75,20 +86,17 @@ class AES:
         round_keys = self.key_expansion()
         for block in blocks:
             block = self.add_round_key(block, round_keys[0])
-            print("Round key: ", round_keys[0])
-            # print("Block: ", block)
             for i in range(1, 10):
                 block = self.sub_bytes(block)
                 block = self.shift_rows(block)
                 block = self.mix_columns(block)
                 block = self.add_round_key(block, round_keys[i])
-                # print("Block: ", block)
-                print("Round key: ", round_keys[i])
                 
             block = self.sub_bytes(block)
             block = self.shift_rows(block)
             block = self.add_round_key(block, round_keys[10])
-            print("Round key: ", round_keys[10])
+            print("Block: ", block)
+            #print("Round key: ", round_keys[10])
             returnBlocks.append(block)
         return returnBlocks  
     
