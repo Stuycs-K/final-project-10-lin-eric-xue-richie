@@ -52,11 +52,35 @@ class AES:
             bytes_list[i] = format(int(bytes_list[i], 16) ^ int(round_key_list[i], 16), "02x")
         return bytes_list
         
-    def key_expansion(self) -> list:
-        expanded_key = []
-        key = to_byte_array(self.key)        
-        for i in range(0, 4):
-            expanded_key.append([key[i], key[i+4], key[i+8], key[i+12]])
+    # def key_expansion(self) -> list:
+    #     expanded_key = []
+    #     key = to_byte_array(self.key)        
+    #     for i in range(0, 4):
+    #         expanded_key.append([key[i], key[i+4], key[i+8], key[i+12]])
+    #     rcon_counter = 0
+    #     for i in range(4, 44):
+    #         temp = expanded_key[i - 1]
+    #         if i % 4 == 0:
+    #             temp = rot_word(temp)
+    #             temp = self.sub_bytes(temp)
+    #             temp = rcon_xor(temp, rcon[rcon_counter])
+    #             rcon_counter += 1
+    #         temp = [format(int(expanded_key[i - 4][j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
+    #         expanded_key.append([temp[j] for j in range(4)])
+        
+    #     # format the expanded key into their round keys
+    #     keys = []
+    #     for i in range(0, 44, 4):
+    #         temp_key = expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3]
+    #         for j in range(4):
+    #             temp_key[j] = expanded_key[i][j] + expanded_key[i+1][j] + expanded_key[i+2][j] + expanded_key[i+3][j]
+    #         temp_key = "".join(temp_key[:4])
+    #         keys.append(temp_key)
+    #     return keys
+
+    def key_expansion(self):
+        key = to_byte_array(self.key)
+        expanded_key = [key[i:i + 4] for i in range(0, len(key), 4)]
         rcon_counter = 0
         for i in range(4, 44):
             temp = expanded_key[i - 1]
@@ -65,19 +89,12 @@ class AES:
                 temp = self.sub_bytes(temp)
                 temp = rcon_xor(temp, rcon[rcon_counter])
                 rcon_counter += 1
-            temp = [format(int(expanded_key[i - 4][j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
-            expanded_key.append([temp[j] for j in range(4)])
+            word = [format(int(expanded_key[i - 4][j], 16) ^ int(temp[j], 16), "02x") for j in range(4)]
+            expanded_key.append(word)
         
-        # format the expanded key into their round keys
-        keys = []
-        for i in range(0, 44, 4):
-            temp_key = expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3]
-            for j in range(4):
-                temp_key[j] = expanded_key[i][j] + expanded_key[i+1][j] + expanded_key[i+2][j] + expanded_key[i+3][j]
-            temp_key = "".join(temp_key[:4])
-            keys.append(temp_key)
-        return keys
-
+        round_keys = [''.join(expanded_key[i] + expanded_key[i+1] + expanded_key[i+2] + expanded_key[i+3]) for i in range(0, len(expanded_key), 4)]
+        return round_keys
+    
     def encrypt(self) -> str:
         blocks = self.split_text()
         returnBlocks = []

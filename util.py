@@ -63,9 +63,8 @@ def gmul(a: int, b: int) -> int:
         b >>= 1  
     return result & 0xFF 
 
-def rot_word(state: str) -> str:
-    state = to_byte_array(state)
-    return state[1] + state[2] + state[3] + state[0]
+def rot_word(word):
+        return word[1:] + word[:1]
 
 def rcon_xor(state: str, rcon: int) -> str:
     state = to_byte_array(state)
