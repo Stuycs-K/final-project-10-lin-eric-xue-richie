@@ -1,4 +1,7 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/ecp4su41)
+
+[Video](https://drive.google.com/file/d/1VVpfFmSCAl2rlgPphm00e7oEeakGJgnP/view?usp=sharing)
+
 # AES Encryption
 
 This project implements AES (Advanced Encryption Standard) encryption in Python. The AES class provides functionality for encrypting plaintext using a specified 128-bit key. 
